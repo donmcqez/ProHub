@@ -1,0 +1,282 @@
+package com.tikay.prohub.home
+
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.NavigationRail
+import androidx.compose.material.NavigationRailDefaults
+import androidx.compose.material.NavigationRailItem
+import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.BottomNavigation
+import com.google.accompanist.insets.ui.Scaffold
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.tikay.prohub.AppNavigation
+import com.tikay.prohub.Screen
+import com.tikay.prohub.core.design.theme.AppBarAlphas
+import com.tikay.prohub.core.design.util.changeSystemBarsColor
+
+/*  
+ * Created by TIKAY on Dec 29, 2022.
+ * Copyright (c) 2022. All rights reserved.
+ */
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+internal fun Home(
+    onOpenSettings: () -> Unit,
+) {
+
+//    val configuration = LocalConfiguration.current
+//    val useBottomNavigation by remember {
+//        derivedStateOf { configuration.smallestScreenWidthDp < 600 }
+//    }
+
+    val systemUiController = rememberSystemUiController()
+    LaunchedEffect(Unit) {
+        systemUiController.changeSystemBarsColor()
+    }
+
+//    Scaffold(
+//        modifier = Modifier.fillMaxSize(),
+//    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            val navController = rememberAnimatedNavController()
+//            val navController = rememberNavController()
+
+            AppNavigation(
+                navController = navController,
+                onOpenSettings = onOpenSettings,
+                changeSystemBarColors = { systemUiController.changeSystemBarsColor() },
+                modifier = Modifier
+//                .weight(1f)
+                    .fillMaxHeight(),
+            )
+        }
+
+//    }
+
+}
+
+/**
+ * Adds an [NavController.OnDestinationChangedListener] to this [NavController] and updates the
+ * returned [State] which is updated as the destination changes.
+ */
+@Stable
+@Composable
+private fun NavController.currentScreenAsState(): State<Screen> {
+    val selectedItem = remember { mutableStateOf<Screen>(Screen.Dashboard) }
+
+    DisposableEffect(this) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            when {
+                destination.hierarchy.any { it.route == Screen.Dashboard.route } -> {
+                    selectedItem.value = Screen.Dashboard
+                }
+                destination.hierarchy.any { it.route == Screen.MediCab.route } -> {
+                    selectedItem.value = Screen.MediCab
+                }
+                destination.hierarchy.any { it.route == Screen.MediCare.route } -> {
+                    selectedItem.value = Screen.MediCare
+                }
+                destination.hierarchy.any { it.route == Screen.Search.route } -> {
+                    selectedItem.value = Screen.Search
+                }
+            }
+        }
+        addOnDestinationChangedListener(listener)
+
+        onDispose {
+            removeOnDestinationChangedListener(listener)
+        }
+    }
+
+    return selectedItem
+}
+
+
+@Composable
+internal fun HomeBottomNavigation(
+    selectedNavigation: Screen,
+    onNavigationSelected: (Screen) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BottomNavigation(
+        backgroundColor = androidx.compose.material.MaterialTheme.colors.surface.copy(alpha = AppBarAlphas.translucentBarAlpha()),
+        contentColor = contentColorFor(androidx.compose.material.MaterialTheme.colors.surface),
+        contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.navigationBars),
+        modifier = modifier
+    ) {
+//        HomeNavigationItems.forEach { item ->
+//            BottomNavigationItem(
+//                icon = {
+//                    HomeNavigationItemIcon(
+//                        item = item,
+//                        selected = selectedNavigation == item.screen
+//                    )
+//                },
+//                label = { Text(text = stringResource(item.labelResId)) },
+//                selected = selectedNavigation == item.screen,
+//                onClick = { onNavigationSelected(item.screen) },
+//            )
+//        }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+internal fun HomeNavigationRail(
+    selectedNavigation: Screen,
+    onNavigationSelected: (Screen) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.material.Surface(
+        color = androidx.compose.material.MaterialTheme.colors.surface,
+        elevation = NavigationRailDefaults.Elevation,
+        modifier = modifier,
+    ) {
+        NavigationRail(
+            backgroundColor = Color.Transparent,
+            contentColor = androidx.compose.material.MaterialTheme.colors.onSurface,
+            elevation = 0.dp,
+            modifier = Modifier.padding(
+                rememberInsetsPaddingValues(
+                    LocalWindowInsets.current.systemBars,
+                    applyEnd = false
+                )
+            )
+        ) {
+//            HomeNavigationItems.forEach { item ->
+//                NavigationRailItem(
+//                    icon = {
+//                        HomeNavigationItemIcon(
+//                            item = item,
+//                            selected = selectedNavigation == item.screen
+//                        )
+//                    },
+//                    alwaysShowLabel = false,
+//                    label = { Text(text = stringResource(item.labelResId)) },
+//                    selected = selectedNavigation == item.screen,
+//                    onClick = { onNavigationSelected(item.screen) },
+//                )
+//            }
+        }
+    }
+}
+
+@Composable
+private fun HomeNavigationItemIcon(item: HomeNavigationItem, selected: Boolean) {
+    val painter = when (item) {
+        is HomeNavigationItem.ResourceIcon -> painterResource(item.iconResId)
+        is HomeNavigationItem.ImageVectorIcon -> rememberVectorPainter(item.iconImageVector)
+    }
+    val selectedPainter = when (item) {
+        is HomeNavigationItem.ResourceIcon -> item.selectedIconResId?.let { painterResource(it) }
+        is HomeNavigationItem.ImageVectorIcon -> item.selectedImageVector?.let { rememberVectorPainter(it) }
+    }
+
+    if (selectedPainter != null) {
+        Crossfade(targetState = selected) {
+            Icon(
+                painter = if (it) selectedPainter else painter,
+                contentDescription = stringResource(item.contentDescriptionResId),
+            )
+        }
+    } else {
+        Icon(
+            painter = painter,
+            contentDescription = stringResource(item.contentDescriptionResId),
+        )
+    }
+}
+
+private sealed class HomeNavigationItem(
+    val screen: Screen,
+    @StringRes val labelResId: Int,
+    @StringRes val contentDescriptionResId: Int,
+) {
+    class ResourceIcon(
+        screen: Screen,
+        @StringRes labelResId: Int,
+        @StringRes contentDescriptionResId: Int,
+        @DrawableRes val iconResId: Int,
+        @DrawableRes val selectedIconResId: Int? = null,
+    ) : HomeNavigationItem(screen, labelResId, contentDescriptionResId)
+
+    class ImageVectorIcon(
+        screen: Screen,
+        @StringRes labelResId: Int,
+        @StringRes contentDescriptionResId: Int,
+        val iconImageVector: ImageVector,
+        val selectedImageVector: ImageVector? = null,
+    ) : HomeNavigationItem(screen, labelResId, contentDescriptionResId)
+}
+
+//private val HomeNavigationItems = listOf(
+//    HomeNavigationItem.ResourceIcon(
+//        screen = Screen.Discover,
+//        labelResId = R.string.discover_title,
+//        contentDescriptionResId = R.string.cd_discover_title,
+//        iconResId = R.drawable.ic_weekend_outline,
+//        selectedIconResId = R.drawable.ic_weekend_filled,
+//    ),
+//    HomeNavigationItem.ImageVectorIcon(
+//        screen = Screen.Following,
+//        labelResId = R.string.following_shows_title,
+//        contentDescriptionResId = R.string.cd_following_shows_title,
+//        iconImageVector = Icons.Default.FavoriteBorder,
+//        selectedImageVector = Icons.Default.Favorite,
+//    ),
+//    HomeNavigationItem.ResourceIcon(
+//        screen = Screen.Watched,
+//        labelResId = R.string.watched_shows_title,
+//        contentDescriptionResId = R.string.cd_watched_shows_title,
+//        iconResId = R.drawable.ic_visibility_outline,
+//        selectedIconResId = R.drawable.ic_visibility,
+//    ),
+//    HomeNavigationItem.ImageVectorIcon(
+//        screen = Screen.Search,
+//        labelResId = R.string.search_navigation_title,
+//        contentDescriptionResId = R.string.cd_search_navigation_title,
+//        iconImageVector = Icons.Default.Search,
+//    ),
+//)

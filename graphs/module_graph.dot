@@ -1,0 +1,55 @@
+
+              digraph modules {
+                  rankdir = "TB"
+                  label = "Module dependencies"
+
+                  		"app" -> "core:design" [color = black]
+"app" -> "feature:account" [color = black]
+"app" -> "feature:medicab" [color = black]
+"app" -> "feature:medicare" [color = black]
+"app" -> "feature:checkout" [color = black]
+"app" -> "feature:profile" [color = black]
+"app" -> "feature:settings" [color = black]
+"domain" -> "core:model" [color = red]
+"core:network" -> "core:common" [color = black]
+"core:testing" -> "core:model" [color = black]
+"data:local" -> "data:repository" [color = black]
+"data:remote" -> "data:repository" [color = black]
+"data:remote" -> "core:network" [color = black]
+"data:repository" -> "domain" [color = black]
+"feature:account" -> "core:common" [color = black]
+"feature:account" -> "core:design" [color = black]
+"feature:account" -> "domain" [color = black]
+"feature:account" -> "core:navigation" [color = black]
+"feature:checkout" -> "core:common" [color = black]
+"feature:checkout" -> "core:design" [color = black]
+"feature:checkout" -> "domain" [color = black]
+"feature:checkout" -> "core:navigation" [color = black]
+"feature:medicab" -> "core:common" [color = black]
+"feature:medicab" -> "core:design" [color = black]
+"feature:medicab" -> "domain" [color = black]
+"feature:medicab" -> "core:navigation" [color = black]
+"feature:medicare" -> "core:common" [color = black]
+"feature:medicare" -> "core:design" [color = black]
+"feature:medicare" -> "domain" [color = black]
+"feature:medicare" -> "core:navigation" [color = black]
+"feature:profile" -> "core:common" [color = black]
+"feature:profile" -> "core:design" [color = black]
+"feature:profile" -> "domain" [color = black]
+"feature:profile" -> "core:navigation" [color = black]
+"feature:settings" -> "core:common" [color = black]
+"feature:settings" -> "core:design" [color = black]
+"feature:settings" -> "domain" [color = black]
+"feature:settings" -> "core:navigation" [color = black]
+
+
+                  subgraph cluster_01 { 
+                      label = "Legend"
+                      graph [fontsize = 10]
+                      node [fontsize = 10]
+                      edge [fontsize = 10]
+                      module -> dependency [color=red, label="api"]
+                      module -> dependency [color=black, label="implementation"]
+                      module -> dependency [color=green, label="compile"]
+                  }
+              }

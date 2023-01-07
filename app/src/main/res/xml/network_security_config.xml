@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<network-security-config>
+<!--    <base-config cleartextTrafficPermitted="true"/>-->
+
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain> <!-- Debug port -->
+        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Debug port -->
+        <domain includeSubdomains="true">10.0.2.3</domain> <!-- Debug port -->
+        <domain includeSubdomains="true">192.168.137.1</domain> <!-- tecno camon 11 -->
+        <domain includeSubdomains="true">192.168.43.245</domain> <!-- netsh wlan-->
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">messengerapi.test</domain>
+    </domain-config>
+    <!--<base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>-->
+</network-security-config>
